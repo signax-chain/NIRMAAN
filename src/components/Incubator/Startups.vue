@@ -122,7 +122,7 @@
               @click="notes(item.docId, item.name)"
               v-if="
                 currentUser.role === 'incubator' ||
-                (currentUser.role === 'mentor' && mentorId)
+                  (currentUser.role === 'mentor' && mentorId)
               "
             >
               <v-list-item-title> Notes </v-list-item-title>
@@ -155,7 +155,7 @@
               @click="_delete(item.docId)"
               v-if="
                 currentUser.role === 'incubator' ||
-                currentUser.role === 'member'
+                  currentUser.role === 'member'
               "
             >
               <v-list-item-title> Delete </v-list-item-title>
@@ -476,7 +476,7 @@ export default {
   mixins: [fundingDetails, messagingMixin],
   computed: {
     ...mapState({ currentUser: (state) => state.user.currentUser }),
-    headers: function () {
+    headers: function() {
       return [
         { text: "", align: "center", sortable: false, value: "logo" },
         { text: "Name", value: "name", align: "center", sortable: true },
@@ -512,8 +512,27 @@ export default {
       cohorts: [],
       cohortnames: [],
       cohortyears: [
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021,
-        2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026,
+        2027,
+        2028,
+        2029,
+        2030,
       ],
       programDialog: false,
       addNewCohortModal: false,
@@ -542,7 +561,7 @@ export default {
         active: "Active",
         droppedout: "Dropped Out",
         graduated: "Graduated",
-      }
+      },
     };
   },
   mounted() {
@@ -648,7 +667,24 @@ export default {
     },
     clearFilter() {
       this.activeFilters = {};
-      this.filteredData = this.startups;
+      const query = this.$route.query;
+      if (query.sub !== undefined) {
+        const data = [];
+        const sub = query.sub;
+        for (let index = 0; index < this.startups.length; index++) {
+          const element = this.startups[index];
+          const id = element.facultyOrStudentId;
+          if (id !== null && id !== undefined && id !== "") {
+            const facultyId = id.toUpperCase().substring(0, 2);
+            if (sub === facultyId) {
+              data.push(element);
+            }
+          }
+        }
+        this.filteredData = data;
+      } else {
+        this.filteredData = this.startups;
+      }
     },
     handleFilterName(order) {
       if (order === "A-Z")
@@ -668,7 +704,8 @@ export default {
 
       if (documents.size === 0) {
         Swal.fire({
-          text: "There is no notes associated to this startup. Do you want to create one?",
+          text:
+            "There is no notes associated to this startup. Do you want to create one?",
           showCancelButton: true,
           confirmButtonColor: "#3aa959",
           cancelButtonColor: "#d33",
@@ -839,8 +876,9 @@ export default {
 
           if (key === "founders" || key === "mentorsAssociated")
             data[fields[key]] = this.getMentors(startup[key]);
-          
-          if(key === 'status') data[fields[key]] = this.statusMap[startup[key]];
+
+          if (key === "status")
+            data[fields[key]] = this.statusMap[startup[key]];
         });
         this.exportingData.push(data);
       });
@@ -953,7 +991,24 @@ export default {
       this.filters.sector = await getSectors(incubatorId);
       this.filters.stage = await getStages(incubatorId);
       this.filter.mentorsAssociated = await getMentorsAssociated(incubatorId);
-      this.filteredData = this.startups;
+      const query = this.$route.query;
+      if (query.sub !== undefined) {
+        const data = [];
+        const sub = query.sub;
+        for (let index = 0; index < this.startups.length; index++) {
+          const element = this.startups[index];
+          const id = element.facultyOrStudentId;
+          if (id !== null && id !== undefined && id !== "") {
+            const facultyId = id.toUpperCase().substring(0, 2);
+            if (sub === facultyId) {
+              data.push(element);
+            }
+          }
+        }
+        this.filteredData = data;
+      } else {
+        this.filteredData = this.startups;
+      }
       this.handleFormat();
     },
     handleFormat() {
@@ -1082,13 +1137,13 @@ export default {
   },
   async created() {
     const role = this.$store.state.user.currentUser.role;
+    console.log(`current user role is ${role}`);
     this.updateHeaders(role);
     if (role === "mentor" || role === "startup" || role === "accountant") {
       if (this.mentorId !== undefined) {
-        const startupIds =
-          this.$store.state.user.currentUser.startupsAssociated.map(
-            (startup) => startup.id
-          );
+        const startupIds = this.$store.state.user.currentUser.startupsAssociated.map(
+          (startup) => startup.id
+        );
         for (let id of startupIds) {
           const data = await getStartupById(id);
           if (data.status !== "droppedout") this.startups.push(data);

@@ -24,6 +24,9 @@ export default {
       chartOptions: {
         chart: {
           type: "bar",
+          events: {
+            dataPointSelection: this.onClickHandler
+          },
         },
         plotOptions: {
           bar: {
@@ -35,7 +38,7 @@ export default {
         },
         dataLabels: {
           enabled: true,
-          formatter: function (val) {
+          formatter: function(val) {
             return val;
           },
           offsetY: 0,
@@ -58,7 +61,7 @@ export default {
           },
         },
         tooltip: {
-          custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+          custom: function({ series, seriesIndex, dataPointIndex, w }) {
             const availableStudentIds = {
               AE: "Aerospace Engineering",
               AM: "Applied Machanics",
@@ -100,7 +103,7 @@ export default {
           },
           labels: {
             show: false,
-            formatter: function (val) {
+            formatter: function(val) {
               return val;
             },
           },
@@ -117,6 +120,7 @@ export default {
           },
         },
       },
+      studentDataArray: [],
     };
   },
   created() {
@@ -125,11 +129,17 @@ export default {
   methods: {
     async initializeGraph() {
       const data = await getStartupsByStudentId();
+      this.studentDataArray = Object.keys(data);
       this.series[0].data = Object.values(data);
       this.chartOptions = {
         ...this.chartOptions,
         ...{ xaxis: { categories: Object.keys(data) } },
       };
+    },
+    onClickHandler(event, chartContext, config) {
+      let dataPointIndex = config.dataPointIndex;
+      const subjectIndex = this.studentDataArray[dataPointIndex];
+      this.$router.push(`/startups?sub=${subjectIndex}`);
     },
   },
 };
