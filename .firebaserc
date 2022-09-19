@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "ims-traktor"
+  },
+  "targets": {
+    "ims-traktor": {
+      "hosting": {
+        "test": [
+          "traktor-beta"
+        ]
+      }
+    }
+  }
+}
