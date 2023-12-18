@@ -240,7 +240,7 @@ export default {
     },
     download() {
       this.progressLoader = true;
-      this.$refs.reportContainer.style.width = "auto";
+      this.$refs.reportContainer.style.width = "1000px";
       this.$refs.reportContainer.style.padding = "2rem";
 
       domtoimage
